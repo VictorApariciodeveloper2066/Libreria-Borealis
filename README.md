@@ -90,7 +90,7 @@ git init
 git add .
 git commit -m "Initial commit"
 git branch -M main
-git remote add origin https://github.com/TU_USUARIO/MariaRifa.git
+git remote add origin https://github.com/VictorApariciodeveloper2066/Libreria-Borealis.git
 git push -u origin main
 ```
 
