@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pagos y Finanzas - Raffle App</title>
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/image.png') }}">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                        "pastel-green": "#a8e6cf",
+                        "pastel-yellow": "#fff9b0",
+                        "pastel-red": "#ffaaa5",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass {
+            background: rgba(34, 22, 16, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(236, 91, 19, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100">
+<div class="relative flex h-screen w-full bg-gradient-to-br from-orange-50 to-white dark:from-background-dark dark:to-[#1a110c]">
+<!-- Sidebar -->
+<aside id="sidebar" class="w-64 h-full flex-none flex flex-col bg-white/80 dark:bg-background-dark/80 backdrop-blur-xl border-r border-black/5 dark:border-white/5 z-30 fixed md:relative -translate-x-full md:translate-x-0 transition-transform duration-300">
+<div class="p-6 flex items-center gap-3">
+<div class="p-2 rounded-xl bg-primary/10 dark:bg-primary/20">
+<span class="material-symbols-outlined text-primary text-2xl">confirmation_number</span>
+</div>
+<h1 class="text-lg font-bold tracking-tight">Raffle Manager</h1>
+<button onclick="toggleSidebar()" class="ml-auto md:hidden p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<nav class="flex-1 px-4 space-y-2 mt-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-primary transition-colors" href="{{ url_for('dashboard_rifas') }}">
+<span class="material-symbols-outlined">home</span>
+<span class="font-medium">Rifas</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-primary transition-colors" href="{{ url_for('dashboard_boletos', rifa_id=rifa.id) }}">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="font-medium">Boletos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary dark:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined fill-1">account_balance_wallet</span>
+<span class="font-medium">Pagos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-primary transition-colors" href="{{ url_for('dashboard_ganador') }}">
+<span class="material-symbols-outlined">emoji_events</span>
+<span class="font-medium">Ganador</span>
+</a>
+</nav>
+<div class="p-4 border-t border-black/5 dark:border-white/5">
+<a href="{{ url_for('logout') }}" class="flex items-center gap-3 px-2 hover:text-primary transition-colors">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-500">logout</span>
+</div>
+<div>
+<p class="text-sm font-bold">Salir</p>
+</div>
+</a>
+</div>
+</aside>
+
+<!-- Main Content -->
+<div class="flex-1 flex flex-col h-full overflow-hidden relative">
+<!-- Sticky Header Area -->
+<header class="flex-none z-20 px-8 py-6 backdrop-blur-md bg-white/40 dark:bg-background-dark/40 border-b border-black/5 dark:border-white/5">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<button onclick="toggleSidebar()" class="md:hidden p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">menu</span>
+</button>
+<a href="{{ url_for('dashboard_rifas') }}" class="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">arrow_back</span>
+</a>
+<div class="bg-primary/10 p-2 rounded-lg">
+<span class="material-symbols-outlined text-primary text-2xl">account_balance_wallet</span>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tight">Pagos y Finanzas</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ rifa.nombre }}</p>
+</div>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-200/50 dark:bg-primary/20">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+</div>
+<!-- Search & Filter -->
+<div class="space-y-3">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input id="search-input" oninput="buscarPagos()" class="w-full bg-white/50 dark:bg-black/20 border-none rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-primary/50 text-sm placeholder:text-slate-400" placeholder="Buscar cliente..." type="text"/>
+</div>
+<div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+<button onclick="filtrarPorMetodo('')" class="filter-btn flex items-center gap-1 bg-primary text-white px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap" data-metodo="">
+Todos
+</button>
+<button onclick="filtrarPorMetodo('Efectivo')" class="filter-btn flex items-center gap-1 bg-white dark:bg-slate-800 px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border border-slate-200 dark:border-slate-700" data-metodo="Efectivo">
+<span class="material-symbols-outlined text-[16px]">payments</span> Efectivo
+</button>
+<button onclick="filtrarPorMetodo('Transferencia')" class="filter-btn flex items-center gap-1 bg-white dark:bg-slate-800 px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border border-slate-200 dark:border-slate-700" data-metodo="Transferencia">
+<span class="material-symbols-outlined text-[16px]">account_balance</span> Transferencia
+</button>
+<button onclick="filtrarPorMetodo('Pago Móvil')" class="filter-btn flex items-center gap-1 bg-white dark:bg-slate-800 px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border border-slate-200 dark:border-slate-700" data-metodo="Pago Móvil">
+<span class="material-symbols-outlined text-[16px]">phone_android</span> Pago Móvil
+</button>
+</div>
+</div>
+</header>
+<!-- Content -->
+<main class="flex-1 overflow-y-auto px-8 py-6 pb-8 relative">
+<!-- Summary Card -->
+<div class="mb-8 rounded-xl bg-gradient-to-br from-primary to-orange-600 p-5 text-white shadow-lg shadow-primary/20">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-white/80 text-xs font-medium uppercase tracking-wider">Total Recaudado</p>
+<h2 class="text-3xl font-bold mt-1">${{ "%.2f"|format(total_recaudado) }}</h2>
+</div>
+<div class="bg-white/20 p-2 rounded-lg backdrop-blur-md">
+<span class="material-symbols-outlined text-2xl">trending_up</span>
+</div>
+</div>
+<div class="mt-4 flex gap-4 text-xs font-medium">
+<div class="flex items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-white"></div>
+<span>{{ total_pagados }} Pagados</span>
+</div>
+<div class="flex items-center gap-1 opacity-70">
+<div class="w-2 h-2 rounded-full bg-white/50"></div>
+<span>{{ total_pendientes }} Pendientes</span>
+</div>
+</div>
+</div>
+
+<!-- Métodos de Pago -->
+<div class="grid grid-cols-3 gap-3 mb-6">
+{% for metodo in pagos_por_metodo %}
+<div class="glass p-4 rounded-xl text-center">
+<span class="material-symbols-outlined text-primary text-2xl">{% if metodo.metodo_pago == 'Efectivo' %}payments{% elif metodo.metodo_pago == 'Transferencia' %}account_balance{% else %}phone_android{% endif %}</span>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-2">{{ metodo.metodo_pago }}</p>
+<p class="text-lg font-bold text-primary mt-1">${{ "%.2f"|format(metodo.total) }}</p>
+<p class="text-[10px] text-slate-400">{{ metodo.cantidad }} pagos</p>
+</div>
+{% endfor %}
+</div>
+<h3 class="font-bold text-sm text-slate-500 dark:text-slate-400 mb-4 uppercase tracking-widest">Pagos Recientes</h3>
+<!-- Transaction List -->
+<div class="space-y-3">
+{% if boletos_pagados %}
+{% for boleto, rifa in boletos_pagados %}
+<button data-nombre="{{ boleto.nombre_comprador or 'Sin nombre' }}" data-metodo="{{ boleto.metodo_pago or 'N/A' }}" onclick="verDetalleBoleto('{{ boleto.numero }}', '{{ boleto.nombre_comprador or 'Sin nombre' }}', '{{ boleto.telefono or 'N/A' }}', '{{ rifa.nombre }}', '{{ rifa.precio }}', '{{ boleto.metodo_pago or 'N/A' }}', '{{ boleto.banco or 'N/A' }}', '{{ boleto.comprobante or '' }}')" class="pago-item glass p-4 rounded-xl flex items-center justify-between group hover:border-primary/50 transition-colors w-full text-left">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+{{ boleto.nombre_comprador[:2].upper() if boleto.nombre_comprador else '??' }}
+</div>
+<div>
+<h4 class="font-bold text-sm">{{ boleto.nombre_comprador or 'Sin nombre' }}</h4>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">{{ boleto.metodo_pago or 'N/A' }}</span>
+<span class="text-[10px] text-slate-400">Boleto #{{ '%02d'|format(boleto.numero) }}</span>
+<span class="text-[10px] text-slate-400">• {{ rifa.nombre[:20] }}</span>
+</div>
+</div>
+</div>
+<div class="text-right flex items-center gap-4">
+<div>
+<p class="font-bold text-primary">${{ "%.2f"|format(rifa.precio) }}</p>
+<p class="text-[10px] text-green-500 font-medium uppercase">Completado</p>
+</div>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+</button>
+{% endfor %}
+{% else %}
+<div class="glass p-8 rounded-xl text-center">
+<span class="material-symbols-outlined text-slate-300 dark:text-slate-600 text-5xl">receipt_long</span>
+<p class="text-slate-500 dark:text-slate-400 mt-3">No hay pagos registrados aún</p>
+</div>
+{% endif %}
+</div>
+</main>
+</div>
+
+<div class="fixed top-20 left-40 size-96 bg-primary/20 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="fixed bottom-10 right-20 size-96 bg-pastel-green/15 rounded-full blur-[120px] pointer-events-none"></div>
+</div>
+
+<!-- Modal para ver comprobante -->
+<div id="modal-comprobante" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick="if(event.target === this) cerrarModal()">
+<div class="bg-gradient-to-br from-white to-orange-50 dark:from-background-dark dark:to-[#1a110c] rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-primary/20">
+<!-- Header -->
+<div class="p-6 rounded-t-3xl relative overflow-hidden bg-gradient-to-br from-primary to-orange-600">
+<div class="absolute inset-0 opacity-10">
+<div class="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>
+<div class="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full translate-y-1/2 -translate-x-1/2"></div>
+</div>
+<div class="relative flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="p-3 rounded-2xl bg-white/30 backdrop-blur-sm">
+<span class="material-symbols-outlined text-3xl text-white">receipt_long</span>
+</div>
+<div>
+<p class="text-white/80 text-xs font-medium uppercase tracking-wider">Detalles del Pago</p>
+<h2 class="text-2xl font-bold text-white">Boleto #<span id="modal-boleto"></span></h2>
+</div>
+</div>
+<button onclick="cerrarModal()" class="p-2 hover:bg-white/20 rounded-full transition-colors text-white">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+
+<div class="p-6 space-y-5">
+<!-- Información del Cliente -->
+<div class="bg-white dark:bg-white/5 rounded-2xl p-5 border-2 border-slate-200 dark:border-white/10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-xl">person</span>
+<h3 class="font-bold text-slate-700 dark:text-slate-300">Información del Cliente</h3>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Nombre</p>
+<p class="font-bold" id="modal-cliente"></p>
+</div>
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Teléfono</p>
+<p class="font-bold" id="modal-telefono"></p>
+</div>
+</div>
+</div>
+
+<!-- Información de la Rifa -->
+<div class="bg-white dark:bg-white/5 rounded-2xl p-5 border-2 border-slate-200 dark:border-white/10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-xl">confirmation_number</span>
+<h3 class="font-bold text-slate-700 dark:text-slate-300">Información de la Rifa</h3>
+</div>
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Rifa</p>
+<p class="font-bold" id="modal-rifa"></p>
+</div>
+</div>
+
+<!-- Información del Pago -->
+<div class="bg-white dark:bg-white/5 rounded-2xl p-5 border-2 border-slate-200 dark:border-white/10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-xl">payments</span>
+<h3 class="font-bold text-slate-700 dark:text-slate-300">Información del Pago</h3>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Monto</p>
+<p class="font-bold text-primary text-xl" id="modal-monto"></p>
+</div>
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Método</p>
+<p class="font-bold" id="modal-metodo"></p>
+</div>
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Banco</p>
+<p class="font-bold" id="modal-banco"></p>
+</div>
+</div>
+</div>
+
+<!-- Comprobante -->
+<div id="comprobante-container" class="hidden">
+<div class="bg-white dark:bg-white/5 rounded-2xl p-5 border-2 border-slate-200 dark:border-white/10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-xl">image</span>
+<h3 class="font-bold text-slate-700 dark:text-slate-300">Comprobante de Pago</h3>
+</div>
+<img id="modal-imagen" class="w-full rounded-xl shadow-lg border-2 border-primary/20" />
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+function toggleSidebar() {
+const sidebar = document.getElementById('sidebar');
+sidebar.classList.toggle('-translate-x-full');
+}
+
+let filtroActual = '';
+
+function buscarPagos() {
+const searchTerm = document.getElementById('search-input').value.toLowerCase();
+const items = document.querySelectorAll('.pago-item');
+
+items.forEach(item => {
+const nombre = item.getAttribute('data-nombre').toLowerCase();
+const metodo = item.getAttribute('data-metodo');
+
+const coincideBusqueda = nombre.includes(searchTerm);
+const coincideFiltro = filtroActual === '' || metodo === filtroActual;
+
+if (coincideBusqueda && coincideFiltro) {
+item.style.display = 'flex';
+} else {
+item.style.display = 'none';
+}
+});
+}
+
+function filtrarPorMetodo(metodo) {
+filtroActual = metodo;
+
+// Actualizar estilos de botones
+const botones = document.querySelectorAll('.filter-btn');
+botones.forEach(btn => {
+if (btn.getAttribute('data-metodo') === metodo) {
+btn.className = 'filter-btn flex items-center gap-1 bg-primary text-white px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap';
+} else {
+btn.className = 'filter-btn flex items-center gap-1 bg-white dark:bg-slate-800 px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border border-slate-200 dark:border-slate-700';
+}
+});
+
+buscarPagos();
+}
+
+function verDetalleBoleto(boleto, cliente, telefono, rifa, monto, metodo, banco, comprobante) {
+document.getElementById('modal-boleto').textContent = boleto;
+document.getElementById('modal-cliente').textContent = cliente;
+document.getElementById('modal-telefono').textContent = telefono;
+document.getElementById('modal-rifa').textContent = rifa;
+document.getElementById('modal-monto').textContent = '$' + parseFloat(monto).toFixed(2);
+document.getElementById('modal-metodo').textContent = metodo;
+document.getElementById('modal-banco').textContent = banco;
+
+if (comprobante) {
+document.getElementById('modal-imagen').src = '/static/comprobantes/' + comprobante;
+document.getElementById('comprobante-container').classList.remove('hidden');
+} else {
+document.getElementById('comprobante-container').classList.add('hidden');
+}
+
+document.getElementById('modal-comprobante').classList.remove('hidden');
+}
+
+function cerrarModal() {
+document.getElementById('modal-comprobante').classList.add('hidden');
+}
+</script>
+</body></html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>{{ rifa.nombre }} - Raffle Manager</title>
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/image.png') }}">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+tailwind.config = {
+darkMode: "class",
+theme: {
+extend: {
+colors: {
+"primary": "#ec5b13",
+"background-light": "#f8f6f6",
+"background-dark": "#221610",
+"pastel-green": "#a8e6cf",
+"pastel-yellow": "#fff9b0",
+"pastel-red": "#ffaaa5",
+},
+fontFamily: {
+"display": ["Public Sans", "sans-serif"]
+},
+borderRadius: {
+"DEFAULT": "0.25rem",
+"lg": "0.5rem",
+"xl": "0.75rem",
+"full": "9999px"
+},
+},
+},
+}
+</script>
+<style>
+.glass {
+background: rgba(255, 255, 255, 0.1);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.dark .glass {
+background: rgba(34, 22, 16, 0.6);
+border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.glass-card {
+background: rgba(255, 255, 255, 0.7);
+backdrop-filter: blur(8px);
+border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.dark .glass-card {
+background: rgba(45, 30, 22, 0.8);
+border: 1px solid rgba(236, 91, 19, 0.1);
+}
+body {
+min-height: max(884px, 100dvh);
+}
+</style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white transition-colors duration-300">
+<div class="relative flex h-screen w-full bg-gradient-to-br from-orange-50 to-white dark:from-background-dark dark:to-[#1a110c]">
+<aside id="sidebar" class="w-64 h-full flex-none flex flex-col bg-white/80 dark:bg-background-dark/80 backdrop-blur-xl border-r border-black/5 dark:border-white/5 z-30 fixed md:relative -translate-x-full md:translate-x-0 transition-transform duration-300">
+<div class="p-6 flex items-center gap-3">
+<div class="p-2 rounded-xl bg-primary/10 dark:bg-primary/20">
+<span class="material-symbols-outlined text-primary text-2xl">confirmation_number</span>
+</div>
+<h1 class="text-lg font-bold tracking-tight">Raffle Manager</h1>
+<button onclick="toggleSidebar()" class="ml-auto md:hidden p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<nav class="flex-1 px-4 space-y-2 mt-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-primary transition-colors" href="{{ url_for('dashboard_rifas') }}">
+<span class="material-symbols-outlined">home</span>
+<span class="font-medium">Rifas</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary dark:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined fill-1">confirmation_number</span>
+<span class="font-medium">Boletos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-primary transition-colors" href="{{ url_for('dashboard_pagos', rifa_id=rifa.id) }}">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-medium">Pagos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-primary transition-colors" href="{{ url_for('dashboard_ganador') }}">
+<span class="material-symbols-outlined">emoji_events</span>
+<span class="font-medium">Ganador</span>
+</a>
+</nav>
+<div class="p-4 border-t border-black/5 dark:border-white/5">
+<a href="{{ url_for('logout') }}" class="flex items-center gap-3 px-2 hover:text-primary transition-colors">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-500">logout</span>
+</div>
+<div>
+<p class="text-sm font-bold">Salir</p>
+</div>
+</a>
+</div>
+</aside>
+<div class="flex-1 flex flex-col h-full overflow-hidden relative">
+<header class="flex-none z-20 px-8 py-6 backdrop-blur-md bg-white/40 dark:bg-background-dark/40 border-b border-black/5 dark:border-white/5">
+<div class="flex flex-col xl:flex-row xl:items-start justify-between gap-6">
+<div class="flex items-center gap-3">
+<button onclick="toggleSidebar()" class="md:hidden p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">menu</span>
+</button>
+<a href="{{ url_for('dashboard_rifas') }}" class="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">arrow_back</span>
+</a>
+<div>
+<h1 class="text-2xl font-bold tracking-tight">{{ rifa.nombre }}</h1>
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
+{% if rifa.fecha_sorteo %}
+Rifa para el {{ rifa.fecha_sorteo.strftime('%d/%m/%Y') }}
+{% else %}
+${{ rifa.precio }} por boleto
+{% endif %}
+</p>
+</div>
+</div>
+<div class="flex items-center gap-4 flex-1 justify-end">
+<div class="relative w-full max-w-xl">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 text-xl">search</span>
+</div>
+<input id="search-input" oninput="buscarBoletos()" class="block w-full pl-10 pr-4 py-2.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 dark:placeholder-slate-500 text-sm transition-all shadow-sm" placeholder="Buscar por número o comprador..." type="text"/>
+</div>
+</div>
+</div>
+{% set disponibles = boletos|selectattr('estatus_pago', 'equalto', 'Disponible')|list|length %}
+{% set reservados = boletos|selectattr('estatus_pago', 'equalto', 'Pendiente')|list|length %}
+{% set pagados = boletos|selectattr('estatus_pago', 'equalto', 'Pagado')|list|length %}
+{% set vendidos = reservados + pagados %}
+{% set progreso = ((vendidos / rifa.cantidad_numeros) * 100)|round|int %}
+<div class="flex flex-wrap items-center justify-between mt-6 bg-white/60 dark:bg-white/5 p-4 rounded-xl border border-black/5 dark:border-white/5 shadow-sm">
+<div class="flex items-center gap-4 min-w-[300px] flex-1">
+<span class="text-sm font-bold text-slate-700 dark:text-slate-300">Progreso:</span>
+<div class="flex items-center gap-3 flex-1">
+<div class="w-full h-2 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary transition-all duration-500" style="width: {{ progreso }}%"></div>
+</div>
+<span class="text-sm font-semibold text-primary whitespace-nowrap">{{ vendidos }}/{{ rifa.cantidad_numeros }} Vendidos</span>
+</div>
+</div>
+<div class="hidden md:block h-8 w-px bg-slate-200 dark:bg-white/10 mx-6"></div>
+<div class="flex gap-4 mt-4 md:mt-0 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-pastel-green/20 border border-pastel-green/30 shrink-0">
+<div class="size-2.5 rounded-full bg-pastel-green shadow-[0_0_8px_#a8e6cf]"></div>
+<span class="text-xs font-bold text-slate-700 dark:text-pastel-green">DISPONIBLE ({{ disponibles }})</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-pastel-yellow/20 border border-pastel-yellow/30 shrink-0">
+<div class="size-2.5 rounded-full bg-pastel-yellow shadow-[0_0_8px_#fff9b0]"></div>
+<span class="text-xs font-bold text-slate-700 dark:text-pastel-yellow">RESERVADO ({{ reservados }})</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/20 border border-primary/30 shrink-0">
+<div class="size-2.5 rounded-full bg-primary shadow-[0_0_8px_#ec5b13]"></div>
+<span class="text-xs font-bold text-slate-700 dark:text-primary">PAGADO ({{ pagados }})</span>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto px-8 py-6 pb-28 relative">
+<div id="boletos-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-3">
+{% for boleto in boletos %}
+<button data-numero="{{ boleto.numero }}" data-comprador="{{ boleto.nombre_comprador or '' }}" onclick="abrirModal({{ boleto.id }}, {{ boleto.numero }}, '{{ boleto.estatus_pago }}', '{{ boleto.nombre_comprador or '' }}', '{{ boleto.telefono or '' }}', '{{ boleto.metodo_pago or '' }}', '{{ boleto.banco or '' }}', '{{ boleto.comprobante or '' }}')" 
+class="aspect-[1/0.8] flex flex-col items-center justify-center rounded-lg glass-card border-b-4 
+{% if boleto.estatus_pago == 'Disponible' %}border-pastel-green{% elif boleto.estatus_pago == 'Pendiente' %}border-pastel-yellow{% else %}border-primary{% endif %} 
+hover:-translate-y-1 transition-all duration-200 hover:shadow-lg group">
+<span class="text-[10px] font-bold opacity-50 mb-0.5 group-hover:opacity-80">#</span>
+<span class="text-lg font-bold">{{ '%02d'|format(boleto.numero) }}</span>
+</button>
+{% endfor %}
+</div>
+</main>
+</div>
+<div class="fixed top-20 left-40 size-96 bg-primary/20 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="fixed bottom-10 right-20 size-96 bg-pastel-green/15 rounded-full blur-[120px] pointer-events-none"></div>
+</div>
+
+<div id="modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick="if(event.target === this) cerrarModal()">
+<div class="bg-gradient-to-br from-white to-orange-50 dark:from-background-dark dark:to-[#1a110c] rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-primary/20">
+<!-- Header con color según estado -->
+<div id="modal-header" class="p-6 rounded-t-3xl relative overflow-hidden">
+<div class="absolute inset-0 opacity-10">
+<div class="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>
+<div class="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full translate-y-1/2 -translate-x-1/2"></div>
+</div>
+<div class="relative flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="p-3 rounded-2xl bg-white/30 backdrop-blur-sm">
+<span class="material-symbols-outlined text-3xl text-white">confirmation_number</span>
+</div>
+<div>
+<p class="text-white/80 text-xs font-medium uppercase tracking-wider">Boleto</p>
+<h2 class="text-3xl font-bold text-white">#<span id="modal-numero"></span></h2>
+</div>
+</div>
+<button onclick="cerrarModal()" class="p-2 hover:bg-white/20 rounded-full transition-colors text-white">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+
+<form id="form-boleto" enctype="multipart/form-data" class="p-6 space-y-5">
+<!-- Estado -->
+<div>
+<label class="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
+<span class="material-symbols-outlined text-primary text-xl">label</span>
+Estado del Boleto
+</label>
+<select id="estatus_pago" name="estatus_pago" onchange="togglePagoFields()" class="w-full bg-white dark:bg-white/5 rounded-xl px-4 py-3 border-2 border-slate-200 dark:border-white/10 focus:border-primary focus:ring-0 font-medium transition-all">
+<option value="Disponible">🟢 Disponible</option>
+<option value="Pendiente">🟡 Reservado</option>
+<option value="Pagado">🟠 Pagado</option>
+</select>
+</div>
+
+<div id="campos-basicos" class="space-y-4">
+<!-- Nombre -->
+<div>
+<label class="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
+<span class="material-symbols-outlined text-primary text-xl">person</span>
+Nombre del Comprador
+</label>
+<input type="text" id="nombre_comprador" name="nombre_comprador" class="w-full bg-white dark:bg-white/5 rounded-xl px-4 py-3 border-2 border-slate-200 dark:border-white/10 focus:border-primary focus:ring-0 transition-all" placeholder="Ingrese el nombre completo">
+</div>
+<!-- Teléfono -->
+<div>
+<label class="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
+<span class="material-symbols-outlined text-primary text-xl">phone</span>
+Teléfono
+</label>
+<input type="text" id="telefono" name="telefono" class="w-full bg-white dark:bg-white/5 rounded-xl px-4 py-3 border-2 border-slate-200 dark:border-white/10 focus:border-primary focus:ring-0 transition-all" placeholder="Número de contacto">
+</div>
+</div>
+
+<div id="campos-pago" class="hidden space-y-4">
+<div class="h-px bg-gradient-to-r from-transparent via-slate-300 dark:via-white/10 to-transparent my-2"></div>
+<!-- Método de Pago -->
+<div>
+<label class="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
+<span class="material-symbols-outlined text-primary text-xl">payments</span>
+Método de Pago
+</label>
+<select id="metodo_pago" name="metodo_pago" class="w-full bg-white dark:bg-white/5 rounded-xl px-4 py-3 border-2 border-slate-200 dark:border-white/10 focus:border-primary focus:ring-0 font-medium transition-all">
+<option value="">Seleccionar método...</option>
+<option value="Transferencia">💳 Transferencia</option>
+<option value="Pago Móvil">📱 Pago Móvil</option>
+<option value="Efectivo">💵 Efectivo</option>
+</select>
+</div>
+<!-- Banco -->
+<div>
+<label class="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
+<span class="material-symbols-outlined text-primary text-xl">account_balance</span>
+Banco
+</label>
+<input type="text" id="banco" name="banco" class="w-full bg-white dark:bg-white/5 rounded-xl px-4 py-3 border-2 border-slate-200 dark:border-white/10 focus:border-primary focus:ring-0 transition-all" placeholder="Nombre del banco">
+</div>
+<!-- Comprobante -->
+<div>
+<label class="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
+<span class="material-symbols-outlined text-primary text-xl">receipt_long</span>
+Comprobante de Pago
+</label>
+<div class="relative">
+<input type="file" id="comprobante" name="comprobante" accept="image/*" class="hidden" onchange="previewImage(event)">
+<label for="comprobante" class="flex items-center justify-center gap-2 w-full bg-primary/5 hover:bg-primary/10 border-2 border-dashed border-primary/30 rounded-xl px-4 py-6 cursor-pointer transition-all group">
+<span class="material-symbols-outlined text-primary text-2xl group-hover:scale-110 transition-transform">upload</span>
+<span class="text-sm font-medium text-primary">Subir imagen</span>
+</label>
+</div>
+<div id="comprobante-preview" class="mt-3 hidden">
+<img id="comprobante-img" class="w-full rounded-xl shadow-lg border-2 border-primary/20">
+</div>
+</div>
+</div>
+
+<button type="submit" class="w-full bg-gradient-to-r from-primary to-orange-600 text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">check_circle</span>
+Guardar Cambios
+</button>
+</form>
+</div>
+</div>
+
+<script>
+let boletoActual = null;
+
+function toggleSidebar() {
+const sidebar = document.getElementById('sidebar');
+sidebar.classList.toggle('-translate-x-full');
+}
+
+function buscarBoletos() {
+const searchTerm = document.getElementById('search-input').value.toLowerCase();
+const botones = document.querySelectorAll('#boletos-grid button');
+
+botones.forEach(boton => {
+const numero = boton.getAttribute('data-numero');
+const comprador = boton.getAttribute('data-comprador').toLowerCase();
+
+if (numero.includes(searchTerm) || comprador.includes(searchTerm)) {
+boton.style.display = 'flex';
+} else {
+boton.style.display = 'none';
+}
+});
+}
+
+function abrirModal(id, numero, estatus, nombre, telefono, metodo, banco, comprobante) {
+boletoActual = id;
+document.getElementById('modal-numero').textContent = numero;
+document.getElementById('estatus_pago').value = estatus;
+document.getElementById('nombre_comprador').value = nombre;
+document.getElementById('telefono').value = telefono;
+document.getElementById('metodo_pago').value = metodo;
+document.getElementById('banco').value = banco;
+
+// Cambiar color del header según estado
+const header = document.getElementById('modal-header');
+if (estatus === 'Disponible') {
+header.className = 'p-6 rounded-t-3xl relative overflow-hidden bg-gradient-to-br from-pastel-green to-green-400';
+} else if (estatus === 'Pendiente') {
+header.className = 'p-6 rounded-t-3xl relative overflow-hidden bg-gradient-to-br from-pastel-yellow to-yellow-400';
+} else {
+header.className = 'p-6 rounded-t-3xl relative overflow-hidden bg-gradient-to-br from-primary to-orange-600';
+}
+
+if (comprobante) {
+document.getElementById('comprobante-img').src = '/static/comprobantes/' + comprobante;
+document.getElementById('comprobante-preview').classList.remove('hidden');
+} else {
+document.getElementById('comprobante-preview').classList.add('hidden');
+}
+
+togglePagoFields();
+document.getElementById('modal').classList.remove('hidden');
+}
+
+function cerrarModal() {
+document.getElementById('modal').classList.add('hidden');
+}
+
+function togglePagoFields() {
+const estatus = document.getElementById('estatus_pago').value;
+const camposPago = document.getElementById('campos-pago');
+const camposBasicos = document.getElementById('campos-basicos');
+
+if (estatus === 'Pagado') {
+camposPago.classList.remove('hidden');
+camposBasicos.classList.remove('hidden');
+} else if (estatus === 'Pendiente') {
+camposPago.classList.add('hidden');
+camposBasicos.classList.remove('hidden');
+} else {
+camposPago.classList.add('hidden');
+camposBasicos.classList.add('hidden');
+}
+}
+
+function previewImage(event) {
+const file = event.target.files[0];
+if (file) {
+const reader = new FileReader();
+reader.onload = function(e) {
+document.getElementById('comprobante-img').src = e.target.result;
+document.getElementById('comprobante-preview').classList.remove('hidden');
+}
+reader.readAsDataURL(file);
+}
+}
+
+document.getElementById('form-boleto').addEventListener('submit', async (e) => {
+e.preventDefault();
+const formData = new FormData(e.target);
+
+try {
+const response = await fetch(`/actualizar_boleto/${boletoActual}`, {
+method: 'POST',
+body: formData
+});
+
+if (response.ok) {
+location.reload();
+}
+} catch (error) {
+alert('Error al actualizar el boleto');
+}
+});
+</script>
+
+</body></html>

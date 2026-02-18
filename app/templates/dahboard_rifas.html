@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Selección de Rifa - Librerías Borealis</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Public Sans', sans-serif;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .aurora-blob {
+            filter: blur(80px);
+            opacity: 0.4;
+            z-index: 0;
+        }
+        .dark .aurora-blob {
+            opacity: 0.15;
+            filter: blur(60px);
+        }.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-slate-50 dark:bg-background-dark font-display text-slate-900 dark:text-white min-h-screen relative overflow-x-hidden transition-colors duration-300">
+<div class="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-orange-200 dark:bg-primary aurora-blob rounded-full pointer-events-none"></div>
+<div class="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-200 dark:bg-purple-500 aurora-blob rounded-full pointer-events-none"></div>
+<div class="fixed top-[20%] right-[-5%] w-[30%] h-[40%] bg-amber-200 dark:bg-orange-400 aurora-blob rounded-full pointer-events-none"></div>
+<div class="relative z-10 flex flex-col min-h-screen pb-24">
+<header class="flex items-center justify-between px-6 pt-8 pb-6">
+<div class="flex items-center gap-3">
+<div class="p-2 glass rounded-lg border-primary/20 bg-white/50 dark:bg-white/5 text-primary">
+<span class="material-symbols-outlined">confirmation_number</span>
+</div>
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Librerías Borealis</p>
+<h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Seleccionar Rifa</h1>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-full glass border-primary/30 flex items-center justify-center overflow-hidden shadow-sm">
+<img alt="Admin user profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6KY0mbs7HPSjuMyj0tY-ZO889iYTaHAqJjed_20xhUcOAKKc2egrhhQd7RVs5wyz7UcEtQIhTl19NtzMx8KzC3wR6Ls5oqkMcAyuWuGNWrdUMmo1C1eC0QGGbooFIrRsB2TUHFX6qJSfvoIvUGry7z8822SwsHElmMgw0DlPIBJtHgcCLJUrw9M3A4dyh2cKJT468TdnYN_8frZzjW6SQpdbHavSBtp6E7PatS6qLHKs_SIRgDZWE17Zc8FbQT49KnXL_fqczpuro"/>
+</div>
+</div>
+</header>
+<main class="flex-1 px-6 space-y-8">
+<section>
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-lg font-bold text-slate-800 dark:text-white">Rifas Activas</h2>
+<button class="text-xs text-primary font-medium hover:text-orange-600 transition-colors">Ver todas</button>
+</div>
+<div class="flex overflow-x-auto gap-4 pb-4 no-scrollbar snap-x snap-mandatory -mx-6 px-6">
+<div class="min-w-[85%] sm:min-w-[320px] snap-center">
+<div class="glass rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-white/40 dark:border-white/10 group relative h-full flex flex-col">
+<div class="relative h-48 overflow-hidden">
+<img alt="Cien Años de Soledad Cover" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdZ01r0jnJlMbSXx7Kyn-fN6iKyOiVKHwRU9risRnOGIpY9EPVJRK9AqzXxgo3MmUfvD7B4kt1uxPW8ePN0S7usvDtB95gkTHE3DdMcrLM8RY3TILUJJInlTFeBHXS8P8FpF1ZzSWatXVa2N7bttvcDuLNLOCYLoy8fhiHpuBQFKDY1Iou2RZ-R8jFQLdBbI0zaSVbXNgR4nuPI64W_Id9ASvFN9nDyoH0ucpGKcvJovSLge3UwcXTc-f_dNP55dZ2tXkfKUOsE6Wb"/>
+<div class="absolute top-3 right-3 bg-white/90 dark:bg-black/70 backdrop-blur-md px-2 py-1 rounded-md text-xs font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50">
+                                Activa
+                            </div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<h3 class="font-bold text-lg text-slate-900 dark:text-white mb-1">Cien Años de Soledad</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2">Edición conmemorativa de lujo, tapa dura con ilustraciones originales.</p>
+<div class="mt-auto">
+<div class="flex justify-between text-xs font-medium mb-1.5">
+<span class="text-slate-600 dark:text-slate-300">Progreso de venta</span>
+<span class="text-primary">78%</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-white/10 rounded-full h-2 overflow-hidden">
+<div class="bg-primary h-2 rounded-full" style="width: 78%"></div>
+</div>
+<div class="flex justify-between mt-3 pt-3 border-t border-slate-200 dark:border-white/10">
+<div class="text-center">
+<p class="text-[10px] text-slate-400 uppercase">Vendidos</p>
+<p class="font-bold text-slate-700 dark:text-slate-200">780</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] text-slate-400 uppercase">Total</p>
+<p class="font-bold text-slate-700 dark:text-slate-200">1000</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] text-slate-400 uppercase">Precio</p>
+<p class="font-bold text-slate-700 dark:text-slate-200">$5.00</p>
+</div>
+</div>
+</div>
+<button class="mt-4 w-full py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-medium text-sm shadow-md hover:opacity-90 transition-opacity">
+                                Gestionar
+                            </button>
+</div>
+</div>
+</div>
+<div class="min-w-[85%] sm:min-w-[320px] snap-center">
+<div class="glass rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-white/40 dark:border-white/10 group relative h-full flex flex-col">
+<div class="relative h-48 overflow-hidden">
+<img alt="Book Cover" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDERRSpLMksfxKmy2Bic_l2_HoMKX3MT7xbdNOKEEJS76ivZZ4AX00OdSoa8vpUpcSPm1fndeKR28SoY3J8NDckdC-oNpo9li01zO-e9BEGVzmGoGYMjhDaZoLn-Jeej5lJQCltDRqy2Q0kdXqv6mDbN6oq7ZLhCwmwCa8gwTsU8uuOuAcatn6UFept5FZ-DywPAo5A8wqfkJ8L6G2D3c7hsIHTWwQTvyYpVD9gARCjrXC5QCsrUKfKWDVq3YkFGxwC63cGlN3FyxXs"/>
+<div class="absolute top-3 right-3 bg-white/90 dark:bg-black/70 backdrop-blur-md px-2 py-1 rounded-md text-xs font-bold text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50">
+                                Por Iniciar
+                            </div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<h3 class="font-bold text-lg text-slate-900 dark:text-white mb-1">Colección Borges</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2">Set completo de obras selectas de Jorge Luis Borges, edición de bolsillo.</p>
+<div class="mt-auto">
+<div class="flex justify-between text-xs font-medium mb-1.5">
+<span class="text-slate-600 dark:text-slate-300">Progreso de venta</span>
+<span class="text-amber-500">12%</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-white/10 rounded-full h-2 overflow-hidden">
+<div class="bg-amber-500 h-2 rounded-full" style="width: 12%"></div>
+</div>
+<div class="flex justify-between mt-3 pt-3 border-t border-slate-200 dark:border-white/10">
+<div class="text-center">
+<p class="text-[10px] text-slate-400 uppercase">Vendidos</p>
+<p class="font-bold text-slate-700 dark:text-slate-200">60</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] text-slate-400 uppercase">Total</p>
+<p class="font-bold text-slate-700 dark:text-slate-200">500</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] text-slate-400 uppercase">Precio</p>
+<p class="font-bold text-slate-700 dark:text-slate-200">$3.50</p>
+</div>
+</div>
+</div>
+<button class="mt-4 w-full py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-medium text-sm shadow-md hover:opacity-90 transition-opacity">
+                                Gestionar
+                            </button>
+</div>
+</div>
+</div>
+<div class="min-w-[85%] sm:min-w-[320px] snap-center">
+<div class="glass rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-white/40 dark:border-white/10 group relative h-full flex flex-col grayscale opacity-80">
+<div class="relative h-48 overflow-hidden">
+<img alt="Book Cover" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUDNGOBJU36AYfP56ntLCGGH86PIXE7Q1hoYy6-3JsywCIeaK5UQhRP3Jf6mT8XyU5NYt3MeQGadB-AwuxmDTfgNikSTsHEFMd2vYEy9PP8cJMMhyVKq3z_OriXYR7zIaeduN-6feZAHoQEzggtW0mCP73D-K1J1nkib9oXojzfWaPlfFJdNtukX8AcUGWMBg6giOyMaksNql6zFXr6ADOBf4QBUT5-_LSlUlFkx6SoRheLt-EAJZtxxbfw_xcDaJ75QZKcm3CTVY7"/>
+<div class="absolute top-3 right-3 bg-white/90 dark:bg-black/70 backdrop-blur-md px-2 py-1 rounded-md text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
+                                Finalizada
+                            </div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<h3 class="font-bold text-lg text-slate-900 dark:text-white mb-1">El Principito: Ed. Pop-up</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2">Libro interactivo con ilustraciones originales y desplegables.</p>
+<div class="mt-auto">
+<div class="flex justify-between text-xs font-medium mb-1.5">
+<span class="text-slate-600 dark:text-slate-300">Progreso de venta</span>
+<span class="text-slate-500">100%</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-white/10 rounded-full h-2 overflow-hidden">
+<div class="bg-slate-500 h-2 rounded-full" style="width: 100%"></div>
+</div>
+<div class="flex justify-between mt-3 pt-3 border-t border-slate-200 dark:border-white/10">
+<div class="text-center">
+<p class="text-[10px] text-slate-400 uppercase">Vendidos</p>
+<p class="font-bold text-slate-700 dark:text-slate-200">200</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] text-slate-400 uppercase">Total</p>
+<p class="font-bold text-slate-700 dark:text-slate-200">200</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] text-slate-400 uppercase">Precio</p>
+<p class="font-bold text-slate-700 dark:text-slate-200">$10.00</p>
+</div>
+</div>
+</div>
+<button class="mt-4 w-full py-2.5 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg font-medium text-sm hover:opacity-90 transition-opacity">
+                                Ver Resultados
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section>
+<button class="w-full group">
+<div class="glass rounded-2xl p-6 border-2 border-dashed border-primary/30 dark:border-primary/20 hover:border-primary/60 dark:hover:border-primary/50 bg-white/30 dark:bg-white/5 hover:bg-white/50 dark:hover:bg-white/10 transition-all duration-300 flex flex-col items-center justify-center text-center gap-3">
+<div class="w-14 h-14 rounded-full bg-gradient-to-tr from-primary to-orange-400 flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-white text-3xl">add</span>
+</div>
+<div>
+<h3 class="text-lg font-bold text-slate-800 dark:text-white">Crear Nueva Rifa</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto">Configura un nuevo sorteo, define los premios y la cantidad de boletos.</p>
+</div>
+</div>
+</button>
+</section>
+<section class="grid grid-cols-2 gap-4 pb-4">
+<div class="glass p-4 rounded-xl flex items-center gap-3">
+<div class="p-2 bg-blue-100 dark:bg-blue-500/20 rounded-lg text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined text-xl">inventory_2</span>
+</div>
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400">Total Rifas</p>
+<p class="font-bold text-slate-800 dark:text-white">12</p>
+</div>
+</div>
+<div class="glass p-4 rounded-xl flex items-center gap-3">
+<div class="p-2 bg-emerald-100 dark:bg-emerald-500/20 rounded-lg text-emerald-600 dark:text-emerald-400">
+<span class="material-symbols-outlined text-xl">check_circle</span>
+</div>
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400">Finalizadas</p>
+<p class="font-bold text-slate-800 dark:text-white">9</p>
+</div>
+</div>
+</section>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 glass border-t border-slate-200 dark:border-white/5 px-6 py-4 z-40 bg-white/80 dark:bg-[#221610]/80">
+<div class="flex justify-between items-center max-w-lg mx-auto">
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary dark:hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">grid_view</span>
+<span class="text-[10px] font-medium">Panel</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary relative" href="#">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="text-[10px] font-medium">Rifas</span>
+<span class="absolute -top-1 right-2 w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary dark:hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">receipt_long</span>
+<span class="text-[10px] font-medium">Ventas</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary dark:hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">settings</span>
+<span class="text-[10px] font-medium">Ajustes</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>

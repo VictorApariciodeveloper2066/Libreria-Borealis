@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Boletos - {{ rifa.nombre }}{% endblock %}
+
+{% block content %}
+<h2>{{ rifa.nombre }}</h2>
+<p>Precio por boleto: ${{ rifa.precio }}</p>
+
+<div class="boletos-grid">
+    {% for boleto in boletos %}
+    <div class="boleto boleto-{{ boleto.estatus_pago|lower }}" data-id="{{ boleto.id }}">
+        <span class="numero">{{ boleto.numero }}</span>
+        {% if boleto.nombre_comprador %}
+        <span class="comprador">{{ boleto.nombre_comprador }}</span>
+        {% endif %}
+        {% if boleto.estatus_pago == 'Pendiente' %}
+        <button onclick="marcarPagado({{ boleto.id }})">Marcar Pagado</button>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<div id="modal-reserva" class="modal">
+    <div class="modal-content">
+        <h3>Reservar Boleto</h3>
+        <input type="text" id="nombre" placeholder="Nombre">
+        <input type="text" id="telefono" placeholder="Teléfono">
+        <button onclick="confirmarReserva()">Confirmar</button>
+        <button onclick="cerrarModal()">Cancelar</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/boletos.js') }}"></script>
+{% endblock %}

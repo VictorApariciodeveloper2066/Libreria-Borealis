@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ganador - Raffle Manager</title>
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/image.png') }}">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+tailwind.config = {
+darkMode: "class",
+theme: {
+extend: {
+colors: {
+"primary": "#ec5b13",
+"background-light": "#f8f6f6",
+"background-dark": "#221610",
+"pastel-green": "#a8e6cf",
+"pastel-yellow": "#fff9b0",
+"pastel-red": "#ffaaa5",
+},
+fontFamily: {
+"display": ["Public Sans", "sans-serif"]
+},
+borderRadius: {
+"DEFAULT": "0.25rem",
+"lg": "0.5rem",
+"xl": "0.75rem",
+"full": "9999px"
+},
+},
+},
+}
+</script>
+<style>
+.glass {
+background: rgba(255, 255, 255, 0.1);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.dark .glass {
+background: rgba(34, 22, 16, 0.6);
+border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.glass-card {
+background: rgba(255, 255, 255, 0.7);
+backdrop-filter: blur(8px);
+border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.dark .glass-card {
+background: rgba(45, 30, 22, 0.8);
+border: 1px solid rgba(236, 91, 19, 0.1);
+}
+body {
+min-height: max(884px, 100dvh);
+}
+.confetti {
+position: fixed;
+width: 10px;
+height: 10px;
+z-index: 9999;
+pointer-events: none;
+animation: confetti-fall 3s linear forwards;
+}
+@keyframes confetti-fall {
+0% {
+transform: translateY(-100vh) rotate(0deg);
+opacity: 1;
+}
+100% {
+transform: translateY(100vh) rotate(720deg);
+opacity: 0;
+}
+}
+</style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white transition-colors duration-300">
+<div class="relative flex h-screen w-full bg-gradient-to-br from-orange-50 to-white dark:from-background-dark dark:to-[#1a110c]">
+<aside id="sidebar" class="w-64 h-full flex-none flex flex-col bg-white/80 dark:bg-background-dark/80 backdrop-blur-xl border-r border-black/5 dark:border-white/5 z-30 fixed md:relative -translate-x-full md:translate-x-0 transition-transform duration-300">
+<div class="p-6 flex items-center gap-3">
+<div class="p-2 rounded-xl bg-primary/10 dark:bg-primary/20">
+<span class="material-symbols-outlined text-primary text-2xl">confirmation_number</span>
+</div>
+<h1 class="text-lg font-bold tracking-tight">Raffle Manager</h1>
+<button onclick="toggleSidebar()" class="ml-auto md:hidden p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<nav class="flex-1 px-4 space-y-2 mt-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-primary transition-colors" href="{{ url_for('dashboard_rifas') }}">
+<span class="material-symbols-outlined">home</span>
+<span class="font-medium">Rifas</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-primary transition-colors" href="{{ url_for('dashboard_boletos', rifa_id=rifas[0].id if rifas else 1) }}">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="font-medium">Boletos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-primary transition-colors" href="{{ url_for('dashboard_pagos') }}">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-medium">Pagos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary dark:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined fill-1">emoji_events</span>
+<span class="font-medium">Ganador</span>
+</a>
+</nav>
+<div class="p-4 border-t border-black/5 dark:border-white/5">
+<a href="{{ url_for('logout') }}" class="flex items-center gap-3 px-2 hover:text-primary transition-colors">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-500">logout</span>
+</div>
+<div>
+<p class="text-sm font-bold">Salir</p>
+</div>
+</a>
+</div>
+</aside>
+<div class="flex-1 flex flex-col h-full overflow-hidden relative">
+<header class="flex-none z-20 px-8 py-6 backdrop-blur-md bg-white/40 dark:bg-background-dark/40 border-b border-black/5 dark:border-white/5">
+<div class="flex items-center gap-3">
+<button onclick="toggleSidebar()" class="md:hidden p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">menu</span>
+</button>
+<a href="{{ url_for('dashboard_rifas') }}" class="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">arrow_back</span>
+</a>
+<div class="p-3 rounded-2xl bg-gradient-to-br from-primary to-orange-600">
+<span class="material-symbols-outlined text-white text-3xl">emoji_events</span>
+</div>
+<div>
+<h1 class="text-2xl font-bold tracking-tight">Seleccionar Ganador</h1>
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
+Elige una rifa para sortear el ganador
+</p>
+</div>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto px-8 py-6 pb-8 relative">
+{% if rifas %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+{% for rifa in rifas %}
+{% set total_boletos = rifa.boletos|length %}
+{% set pagados = rifa.boletos|selectattr('estatus_pago', 'equalto', 'Pagado')|list|length %}
+{% set progreso = ((pagados / total_boletos) * 100)|round|int if total_boletos > 0 else 0 %}
+{% set ganador = rifa.boletos|selectattr('id', 'equalto', rifa.boleto_ganador_id)|first if rifa.boleto_ganador_id else none %}
+<div class="glass-card rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative">
+{% if rifa.boleto_ganador_id %}
+<div class="absolute top-3 right-3 z-10 bg-green-500 text-white rounded-full p-2 shadow-lg">
+<span class="material-symbols-outlined text-2xl">check_circle</span>
+</div>
+{% endif %}
+{% if rifa.imagen %}
+<div class="h-48 overflow-hidden bg-gradient-to-br from-primary/20 to-orange-200">
+<img src="{{ url_for('static', filename='uploads/' + rifa.imagen) }}" class="w-full h-full object-cover" alt="{{ rifa.nombre }}">
+</div>
+{% else %}
+<div class="h-48 bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-6xl">confirmation_number</span>
+</div>
+{% endif %}
+<div class="p-6">
+<h3 class="text-xl font-bold mb-2">{{ rifa.nombre }}</h3>
+<div class="space-y-3 mb-4">
+<div class="flex items-center justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400">Precio por boleto</span>
+<span class="font-bold text-primary">${{ rifa.precio }}</span>
+</div>
+{% if rifa.fecha_sorteo %}
+<div class="flex items-center justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400">Fecha del sorteo</span>
+<span class="font-bold">{{ rifa.fecha_sorteo.strftime('%d/%m/%Y') }}</span>
+</div>
+{% endif %}
+<div class="flex items-center justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400">Boletos pagados</span>
+<span class="font-bold">{{ pagados }}/{{ total_boletos }}</span>
+</div>
+</div>
+<div class="mb-4">
+<div class="flex justify-between text-xs mb-1">
+<span class="text-slate-500">Progreso</span>
+<span class="font-bold text-primary">{{ progreso }}%</span>
+</div>
+<div class="w-full h-2 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-orange-600 transition-all duration-500" style="width: {{ progreso }}%"></div>
+</div>
+</div>
+{% if rifa.boleto_ganador_id %}
+<div class="mb-4 p-4 rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-green-600 text-2xl">emoji_events</span>
+<div>
+<p class="text-xs font-bold text-green-600 uppercase">Ganador</p>
+<p class="text-sm font-bold text-slate-900 dark:text-white">{{ ganador.nombre_comprador if ganador else 'N/A' }}</p>
+</div>
+</div>
+<div class="px-4 py-2 rounded-lg bg-green-600 text-white font-bold text-lg">
+#{{ '%02d'|format(ganador.numero) if ganador else '00' }}
+</div>
+</div>
+</div>
+{% else %}
+<button onclick="sortearGanador({{ rifa.id }}, '{{ rifa.nombre }}', {{ total_boletos }}, {{ pagados }}, '{{ rifa.fecha_sorteo.strftime('%Y-%m-%d') if rifa.fecha_sorteo else '' }}')" class="w-full bg-gradient-to-r from-primary to-orange-600 text-white py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">casino</span>
+Sortear Ganador
+</button>
+{% endif %}
+
+<!-- Botón de eliminar rifa -->
+<button onclick="eliminarRifa({{ rifa.id }}, '{{ rifa.nombre }}')" class="mt-3 w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-bold transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">delete</span>
+Eliminar Rifa
+</button>
+</div>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<div class="flex flex-col items-center justify-center h-full">
+<div class="glass-card rounded-3xl p-12 text-center max-w-md">
+<span class="material-symbols-outlined text-slate-300 dark:text-slate-600 text-7xl mb-4">emoji_events</span>
+<h3 class="text-xl font-bold mb-2">No hay rifas disponibles</h3>
+<p class="text-slate-500 dark:text-slate-400 mb-6">Crea una rifa para poder sortear un ganador</p>
+<a href="{{ url_for('dashboard_agregar') }}" class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:brightness-110 transition-all">
+<span class="material-symbols-outlined">add</span>
+Crear Rifa
+</a>
+</div>
+</div>
+{% endif %}
+</main>
+</div>
+<div class="fixed top-20 left-40 size-96 bg-primary/20 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="fixed bottom-10 right-20 size-96 bg-pastel-green/15 rounded-full blur-[120px] pointer-events-none"></div>
+</div>
+
+<!-- Modal de Advertencia -->
+<div id="modal-advertencia" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+<div class="bg-gradient-to-br from-white to-orange-50 dark:from-background-dark dark:to-[#1a110c] rounded-3xl max-w-md w-full shadow-2xl border border-primary/20">
+<div class="p-6 rounded-t-3xl relative overflow-hidden bg-gradient-to-br from-amber-500 to-orange-600">
+<div class="absolute inset-0 opacity-10">
+<div class="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>
+</div>
+<div class="relative flex items-center gap-3">
+<div class="p-3 rounded-2xl bg-white/30 backdrop-blur-sm">
+<span class="material-symbols-outlined text-3xl text-white">warning</span>
+</div>
+<div>
+<h2 class="text-2xl font-bold text-white">Advertencia</h2>
+</div>
+</div>
+</div>
+<div class="p-6">
+<p id="mensaje-advertencia" class="text-slate-700 dark:text-slate-300 mb-6 text-center text-lg"></p>
+<button onclick="cerrarAdvertencia()" class="w-full bg-gradient-to-r from-primary to-orange-600 text-white py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-primary/30 transition-all">
+Entendido
+</button>
+</div>
+</div>
+</div>
+
+<!-- Modal de Ganador -->
+<div id="modal-ganador" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+<div class="bg-gradient-to-br from-white to-orange-50 dark:from-background-dark dark:to-[#1a110c] rounded-3xl max-w-lg w-full shadow-2xl border border-primary/20">
+<div class="p-8 rounded-t-3xl relative overflow-hidden bg-gradient-to-br from-primary to-orange-600">
+<div class="absolute inset-0 opacity-10">
+<div class="absolute top-0 right-0 w-40 h-40 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>
+<div class="absolute bottom-0 left-0 w-32 h-32 bg-white rounded-full translate-y-1/2 -translate-x-1/2"></div>
+</div>
+<div class="relative text-center">
+<div class="inline-flex p-4 rounded-3xl bg-white/30 backdrop-blur-sm mb-4">
+<span class="material-symbols-outlined text-6xl text-white">emoji_events</span>
+</div>
+<h2 class="text-3xl font-bold text-white mb-2">¡Tenemos un Ganador!</h2>
+<p class="text-white/80 text-sm" id="rifa-nombre"></p>
+</div>
+</div>
+<div class="p-8 text-center">
+<div class="mb-6">
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Boleto Ganador</p>
+<div id="numero-container" class="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary to-orange-600 text-white mb-4">
+<span class="text-4xl font-bold">#<span id="ganador-numero"></span></span>
+</div>
+</div>
+<div id="info-ganador" class="hidden">
+<div class="bg-white dark:bg-white/5 rounded-2xl p-6 border-2 border-slate-200 dark:border-white/10 mb-6">
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Ganador</p>
+<p class="text-2xl font-bold text-primary mb-3" id="ganador-nombre"></p>
+</div>
+<button onclick="cerrarGanador()" class="w-full bg-gradient-to-r from-primary to-orange-600 text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-primary/30 transition-all">
+Cerrar
+</button>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+function toggleSidebar() {
+const sidebar = document.getElementById('sidebar');
+sidebar.classList.toggle('-translate-x-full');
+}
+
+let audioContext;
+let drumrollAudio;
+let winnerAudio;
+
+function initAudio() {
+if (!audioContext) {
+audioContext = new (window.AudioContext || window.webkitAudioContext)();
+}
+}
+
+function playDrumroll() {
+initAudio();
+if (drumrollAudio) drumrollAudio.pause();
+drumrollAudio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGGe77OeeSwwPUKfj8LZjHAY4kdfyzHksBSR3x/DdkEAKFF606+uoVRQKRp/g8r5sIQUrgs7y2Yk2CBhnu+znnnsMD1Cn4/C2YxwGOJHX8sx5LAUkd8fw3ZBBChRdtOvrqFUUCkaf4PK+bCEFK4LO8tmJNggYZ7vs5557DA9Qp+PwtmMcBjiR1/LMeSwFJHfH8N2QQQoUXbTr66hVFApGn+DyvmwhBSuCzvLZiTYIGGe77OeeewwPUKfj8LZjHAY4kdfyzHksBSR3x/DdkEEKFF206+uoVRQKRp/g8r5sIQUrgs7y2Yk2CBhnu+znnnsMD1Cn4/C2YxwGOJHX8sx5LAUkd8fw3ZBBChRdtOvrqFUUCkaf4PK+bCEFK4LO8tmJNggYZ7vs5557DA9Qp+PwtmMcBjiR1/LMeSwFJHfH8N2QQQoUXbTr66hVFApGn+DyvmwhBSuCzvLZiTYIGGe77OeeewwPUKfj8LZjHAY4kdfyzHksBSR3x/DdkEEKFF206+uoVRQKRp/g8r5sIQUrgs7y2Yk2CBhnu+znnnsMD1Cn4/C2YxwGOJHX8sx5LAUkd8fw3ZBBChRdtOvrqFUUCkaf4PK+bCEFK4LO8tmJNggYZ7vs5557DA9Qp+PwtmMcBjiR1/LMeSwFJHfH8N2QQQoUXbTr66hVFApGn+DyvmwhBSuCzvLZiTYIGGe77OeeewwPUKfj8LZjHAY4kdfyzHksBSR3x/DdkEEKFF206+uoVRQKRp/g8r5sIQUrgs7y2Yk2CBhnu+znnnsMD1Cn4/C2YxwGOJHX8sx5LAUkd8fw3ZBBChRdtOvrqFUUCkaf4PK+bCEFK4LO8tmJNggYZ7vs5557DA9Qp+PwtmMcBjiR1/LMeSwFJHfH8N2QQQoUXbTr66hVFApGn+DyvmwhBSuCzvLZiTYIGGe77OeeewwPUKfj8LZjHAY4kdfyzHksBSR3x/DdkEEKFF206+uoVRQKRp/g8r5sIQU=');
+drumrollAudio.loop = true;
+drumrollAudio.volume = 0.3;
+drumrollAudio.play().catch(() => {});
+}
+
+function playWinnerSound() {
+initAudio();
+if (drumrollAudio) drumrollAudio.pause();
+const oscillator = audioContext.createOscillator();
+const gainNode = audioContext.createGain();
+oscillator.connect(gainNode);
+gainNode.connect(audioContext.destination);
+oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
+oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1);
+oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2);
+gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+oscillator.start(audioContext.currentTime);
+oscillator.stop(audioContext.currentTime + 1);
+}
+
+function createConfetti() {
+const colors = ['#ec5b13', '#ff6b35', '#f7931e', '#ffd700', '#ff1744', '#e91e63', '#9c27b0', '#3f51b5'];
+const confettiCount = 100;
+
+for (let i = 0; i < confettiCount; i++) {
+setTimeout(() => {
+const confetti = document.createElement('div');
+confetti.className = 'confetti';
+confetti.style.left = Math.random() * 100 + 'vw';
+confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+confetti.style.animationDelay = Math.random() * 0.5 + 's';
+confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+document.body.appendChild(confetti);
+
+setTimeout(() => confetti.remove(), 3500);
+}, i * 30);
+}
+}
+
+async function sortearGanador(rifaId, rifaNombre, totalBoletos, pagados, fechaSorteo) {
+// Verificar fecha
+if (fechaSorteo) {
+const hoy = new Date();
+const fechaSorteoDate = new Date(fechaSorteo);
+if (fechaSorteoDate > hoy) {
+mostrarAdvertencia(`El sorteo está programado para el ${fechaSorteoDate.toLocaleDateString('es-ES')}`);
+return;
+}
+}
+
+// Verificar pagos
+if (pagados < totalBoletos) {
+mostrarAdvertencia(`Faltan ${totalBoletos - pagados} boletos por pagar. Solo ${pagados} de ${totalBoletos} están pagados.`);
+return;
+}
+
+// Realizar sorteo
+try {
+const response = await fetch(`/sortear_ganador/${rifaId}`, {
+method: 'POST'
+});
+const data = await response.json();
+
+if (data.success) {
+mostrarGanador(rifaNombre, data.ganador);
+} else {
+mostrarAdvertencia(data.message);
+}
+} catch (error) {
+mostrarAdvertencia('Error al realizar el sorteo');
+}
+}
+
+function mostrarAdvertencia(mensaje) {
+document.getElementById('mensaje-advertencia').textContent = mensaje;
+document.getElementById('modal-advertencia').classList.remove('hidden');
+}
+
+function cerrarAdvertencia() {
+document.getElementById('modal-advertencia').classList.add('hidden');
+}
+
+function mostrarGanador(rifaNombre, ganador) {
+document.getElementById('rifa-nombre').textContent = rifaNombre;
+document.getElementById('modal-ganador').classList.remove('hidden');
+document.getElementById('info-ganador').classList.add('hidden');
+
+const numeroElement = document.getElementById('ganador-numero');
+const container = document.getElementById('numero-container');
+
+// Iniciar sonido de drumroll
+playDrumroll();
+
+// Animación de números girando
+let counter = 0;
+const duration = 3000; // 3 segundos
+const interval = 50;
+const iterations = duration / interval;
+
+container.style.transform = 'scale(1.2)';
+container.style.transition = 'transform 0.1s';
+
+const animation = setInterval(() => {
+const randomNum = Math.floor(Math.random() * 100) + 1;
+numeroElement.textContent = String(randomNum).padStart(2, '0');
+container.style.transform = counter % 2 === 0 ? 'scale(1.2) rotate(5deg)' : 'scale(1.2) rotate(-5deg)';
+counter++;
+
+if (counter >= iterations) {
+clearInterval(animation);
+// Mostrar número ganador
+container.style.transform = 'scale(1.5)';
+container.style.transition = 'transform 0.5s ease-out';
+numeroElement.textContent = String(ganador.numero).padStart(2, '0');
+
+// Reproducir sonido de victoria
+playWinnerSound();
+
+// Lanzar confetti
+createConfetti();
+
+// Efecto de confeti visual
+container.style.boxShadow = '0 0 30px rgba(236, 91, 19, 0.8)';
+
+setTimeout(() => {
+container.style.transform = 'scale(1)';
+container.style.boxShadow = '';
+// Mostrar información del ganador
+document.getElementById('ganador-nombre').textContent = ganador.nombre;
+document.getElementById('info-ganador').classList.remove('hidden');
+}, 500);
+}
+}, interval);
+}
+
+function cerrarGanador() {
+if (drumrollAudio) drumrollAudio.pause();
+document.getElementById('modal-ganador').classList.add('hidden');
+location.reload();
+}
+
+async function eliminarRifa(rifaId, rifaNombre) {
+if (!confirm(`¿Estás seguro de que quieres eliminar la rifa "${rifaNombre}"? Esta acción no se puede deshacer.`)) {
+return;
+}
+
+try {
+const response = await fetch(`/borrar_rifa/${rifaId}`, {
+method: 'GET'
+});
+
+if (response.ok) {
+window.location.href = '/dashboard/ganador';
+} else {
+mostrarAdvertencia('Error al eliminar la rifa');
+}
+} catch (error) {
+mostrarAdvertencia('Error al eliminar la rifa');
+}
+}
+</script>
+
+</body></html>
